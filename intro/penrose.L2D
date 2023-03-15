@@ -1,0 +1,31 @@
+# Comments worden voorafgegaan door '#'
+# En gelden tot het einde van de regel
+
+#De onderdelen van het L systeem moeten in deze volgorde worden opgegeven
+
+#Het Alfabet van het L Systeem
+Alphabet = {M,N,O,P,F}
+
+#De 'Draw' Functie
+Draw = { M -> 1, N -> 1, O -> 1, P -> 1, F -> 1}
+
+#De Regels van het L Systeem
+Rules = {
+	M -> "OF++PF----NF(-OF----MF)++",
+    N -> "+OF--PF(---MF--NF)+",
+    O -> "-MF++NF(+++OF++PF)-",
+    P -> "--OF++++MF(+PF++++NF)--NF",
+    F -> ""
+}
+
+#De initile String
+Initiator = "(N)++(N)++(N)++(N)++(N)"
+
+#De gebruikte hoek (in graden)
+Angle = 36.0
+
+#De Initile hoek (in graden)
+StartingAngle = 0.0
+
+#Het Aantal keer dat een Symbool door zijn Replacement moet worden vervangen
+Iterations = 8
