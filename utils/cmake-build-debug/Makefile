@@ -174,6 +174,30 @@ engine/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/build
 .PHONY : engine/fast
 
+3d_linedrawings.o: 3d_linedrawings.cc.o
+.PHONY : 3d_linedrawings.o
+
+# target to build an object file
+3d_linedrawings.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/3d_linedrawings.cc.o
+.PHONY : 3d_linedrawings.cc.o
+
+3d_linedrawings.i: 3d_linedrawings.cc.i
+.PHONY : 3d_linedrawings.i
+
+# target to preprocess a source file
+3d_linedrawings.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/3d_linedrawings.cc.i
+.PHONY : 3d_linedrawings.cc.i
+
+3d_linedrawings.s: 3d_linedrawings.cc.s
+.PHONY : 3d_linedrawings.s
+
+# target to generate assembly for a file
+3d_linedrawings.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/3d_linedrawings.cc.s
+.PHONY : 3d_linedrawings.cc.s
+
 easy_image.o: easy_image.cc.o
 .PHONY : easy_image.o
 
@@ -294,6 +318,30 @@ real_lines.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/real_lines.cpp.s
 .PHONY : real_lines.cpp.s
 
+vector/vector3d.o: vector/vector3d.cc.o
+.PHONY : vector/vector3d.o
+
+# target to build an object file
+vector/vector3d.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/vector/vector3d.cc.o
+.PHONY : vector/vector3d.cc.o
+
+vector/vector3d.i: vector/vector3d.cc.i
+.PHONY : vector/vector3d.i
+
+# target to preprocess a source file
+vector/vector3d.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/vector/vector3d.cc.i
+.PHONY : vector/vector3d.cc.i
+
+vector/vector3d.s: vector/vector3d.cc.s
+.PHONY : vector/vector3d.s
+
+# target to generate assembly for a file
+vector/vector3d.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/engine.dir/build.make CMakeFiles/engine.dir/vector/vector3d.cc.s
+.PHONY : vector/vector3d.cc.s
+
 week_0.o: week_0.cpp.o
 .PHONY : week_0.o
 
@@ -331,6 +379,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... engine"
+	@echo "... 3d_linedrawings.o"
+	@echo "... 3d_linedrawings.i"
+	@echo "... 3d_linedrawings.s"
 	@echo "... easy_image.o"
 	@echo "... easy_image.i"
 	@echo "... easy_image.s"
@@ -346,6 +397,9 @@ help:
 	@echo "... real_lines.o"
 	@echo "... real_lines.i"
 	@echo "... real_lines.s"
+	@echo "... vector/vector3d.o"
+	@echo "... vector/vector3d.i"
+	@echo "... vector/vector3d.s"
 	@echo "... week_0.o"
 	@echo "... week_0.i"
 	@echo "... week_0.s"

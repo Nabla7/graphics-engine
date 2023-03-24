@@ -3,18 +3,11 @@
   "configurations": [
     {
       "name": "C/C++ Runner: Debug Session",
-      "type": "cppdbg",
+      "type": "lldb",
       "request": "launch",
-      "args": [
-        ""
-      ],
-      "stopAtEntry": true,
-      "cwd": "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/0",
-      "environment": [],
-      "program": "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/0/build/Debug/outDebug",
-      "internalConsoleOptions": "openOnSessionStart",
-      "MIMode": "gdb",
-      "externalConsole": true
+      "args": [],
+      "cwd": "/Users/pimvandenbosch/Desktop/UA/Computer Graphics",
+      "program": "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/build/Debug/outDebug"
     }
   ]
 }

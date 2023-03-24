@@ -18,7 +18,12 @@ set(engine_sources
 	easy_image.cc
 	engine.cc
 	ini_configuration.cc
-        real_lines.cpp real_lines.h week_0.cpp week_0.h l_parser.h l_parser.cc)
+	real_lines.cpp
+	real_lines.h
+	week_0.cpp
+	week_0.h
+	l_parser.h
+	l_parser.cc vector/vector3d.cc 3d_linedrawings.cc 3d_linedrawings.h 3d_linedrawings.h)
 
 ############################################################
 # Create an executable

@@ -120,6 +120,12 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/3d_linedrawings.cc">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/3d_linedrawings.h">
+			<Option target="engine"/>
+		</Unit>
 		<Unit filename="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/easy_image.cc">
 			<Option target="engine"/>
 		</Unit>
@@ -145,6 +151,12 @@
 			<Option target="engine"/>
 		</Unit>
 		<Unit filename="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/real_lines.h">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/vector/vector3d.cc">
+			<Option target="engine"/>
+		</Unit>
+		<Unit filename="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/vector/vector3d.h">
 			<Option target="engine"/>
 		</Unit>
 		<Unit filename="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/week_0.cpp">

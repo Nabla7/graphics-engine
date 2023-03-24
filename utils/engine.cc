@@ -47,6 +47,10 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
 
     }
 
+    if (type == "Wireframe"){
+
+    }
+
     if (type == "2DLSystem")
     {
         Lines2D line_list = L_System2D(inputfile, linecolor);

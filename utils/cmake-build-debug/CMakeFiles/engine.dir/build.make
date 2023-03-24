@@ -153,6 +153,34 @@ CMakeFiles/engine.dir/l_parser.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/engine.dir/l_parser.cc.s"
 	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/l_parser.cc" -o CMakeFiles/engine.dir/l_parser.cc.s
 
+CMakeFiles/engine.dir/vector/vector3d.cc.o: CMakeFiles/engine.dir/flags.make
+CMakeFiles/engine.dir/vector/vector3d.cc.o: /Users/pimvandenbosch/Desktop/UA/Computer\ Graphics/utils/vector/vector3d.cc
+CMakeFiles/engine.dir/vector/vector3d.cc.o: CMakeFiles/engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/cmake-build-debug/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/engine.dir/vector/vector3d.cc.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/engine.dir/vector/vector3d.cc.o -MF CMakeFiles/engine.dir/vector/vector3d.cc.o.d -o CMakeFiles/engine.dir/vector/vector3d.cc.o -c "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/vector/vector3d.cc"
+
+CMakeFiles/engine.dir/vector/vector3d.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/engine.dir/vector/vector3d.cc.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/vector/vector3d.cc" > CMakeFiles/engine.dir/vector/vector3d.cc.i
+
+CMakeFiles/engine.dir/vector/vector3d.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/engine.dir/vector/vector3d.cc.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/vector/vector3d.cc" -o CMakeFiles/engine.dir/vector/vector3d.cc.s
+
+CMakeFiles/engine.dir/3d_linedrawings.cc.o: CMakeFiles/engine.dir/flags.make
+CMakeFiles/engine.dir/3d_linedrawings.cc.o: /Users/pimvandenbosch/Desktop/UA/Computer\ Graphics/utils/3d_linedrawings.cc
+CMakeFiles/engine.dir/3d_linedrawings.cc.o: CMakeFiles/engine.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/cmake-build-debug/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/engine.dir/3d_linedrawings.cc.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/engine.dir/3d_linedrawings.cc.o -MF CMakeFiles/engine.dir/3d_linedrawings.cc.o.d -o CMakeFiles/engine.dir/3d_linedrawings.cc.o -c "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/3d_linedrawings.cc"
+
+CMakeFiles/engine.dir/3d_linedrawings.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/engine.dir/3d_linedrawings.cc.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/3d_linedrawings.cc" > CMakeFiles/engine.dir/3d_linedrawings.cc.i
+
+CMakeFiles/engine.dir/3d_linedrawings.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/engine.dir/3d_linedrawings.cc.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/3d_linedrawings.cc" -o CMakeFiles/engine.dir/3d_linedrawings.cc.s
+
 # Object files for target engine
 engine_OBJECTS = \
 "CMakeFiles/engine.dir/easy_image.cc.o" \
@@ -160,7 +188,9 @@ engine_OBJECTS = \
 "CMakeFiles/engine.dir/ini_configuration.cc.o" \
 "CMakeFiles/engine.dir/real_lines.cpp.o" \
 "CMakeFiles/engine.dir/week_0.cpp.o" \
-"CMakeFiles/engine.dir/l_parser.cc.o"
+"CMakeFiles/engine.dir/l_parser.cc.o" \
+"CMakeFiles/engine.dir/vector/vector3d.cc.o" \
+"CMakeFiles/engine.dir/3d_linedrawings.cc.o"
 
 # External object files for target engine
 engine_EXTERNAL_OBJECTS =
@@ -171,9 +201,11 @@ engine: CMakeFiles/engine.dir/ini_configuration.cc.o
 engine: CMakeFiles/engine.dir/real_lines.cpp.o
 engine: CMakeFiles/engine.dir/week_0.cpp.o
 engine: CMakeFiles/engine.dir/l_parser.cc.o
+engine: CMakeFiles/engine.dir/vector/vector3d.cc.o
+engine: CMakeFiles/engine.dir/3d_linedrawings.cc.o
 engine: CMakeFiles/engine.dir/build.make
 engine: CMakeFiles/engine.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/cmake-build-debug/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable engine"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir="/Users/pimvandenbosch/Desktop/UA/Computer Graphics/utils/cmake-build-debug/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable engine"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/engine.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
