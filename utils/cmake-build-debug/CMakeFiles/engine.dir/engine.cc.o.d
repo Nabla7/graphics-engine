@@ -236,6 +236,8 @@ CMakeFiles/engine.dir/engine.cc.o: \
   /Users/pimvandenbosch/Desktop/UA/Computer\ Graphics/utils/week_0.h \
   /Users/pimvandenbosch/Desktop/UA/Computer\ Graphics/utils/real_lines.h \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/list \
+  /Users/pimvandenbosch/Desktop/UA/Computer\ Graphics/utils/3d_linedrawings.h \
+  /Users/pimvandenbosch/Desktop/UA/Computer\ Graphics/utils/vector/vector3d.h \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/fstream \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/filesystem \
   /Library/Developer/CommandLineTools/usr/bin/../include/c++/v1/stack \

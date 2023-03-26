@@ -2,6 +2,7 @@
 #include "ini_configuration.h"
 #include "week_0.h"
 #include "real_lines.h"
+#include "3d_linedrawings.h"
 
 #include <fstream>
 #include <iostream>
@@ -11,7 +12,7 @@
 using namespace std;
 
 
-img::EasyImage generate_image(const ini::Configuration &configuration)
+img::EasyImage generate_image(ini::Configuration &configuration)
 {
     img::EasyImage image;
 
@@ -48,7 +49,7 @@ img::EasyImage generate_image(const ini::Configuration &configuration)
     }
 
     if (type == "Wireframe"){
-
+        image = linedrawer3D(configuration);
     }
 
     if (type == "2DLSystem")

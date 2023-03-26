@@ -22,10 +22,19 @@ class Figure3D{
 public:
     vector<Vector3D> points;
     vector<Face> faces;
-    Color color;
+    Color lineColor;
+    double angleX;
+    double angleY;
+    double angleZ;
+    double scale;
+    vector<double> center;
+    vector<double> bgColor;
+    int nrPoints;
+    int nrLines;
 };
 
 typedef vector<Figure3D> Figures3D;
 
+img::EasyImage linedrawer3D(ini::Configuration &configuration);
 
 #endif //ENGINE_3D_LINEDRAWINGS_H
