@@ -29,8 +29,6 @@ public:
     double scale;
     vector<double> center;
     vector<double> bgColor;
-    int nrPoints;
-    int nrLines;
 };
 
 typedef vector<Figure3D> Figures3D;

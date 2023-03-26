@@ -14,7 +14,6 @@ Matrix scaleFigure(const double scale) {
     return scaleMatrix;
 }
 
-
 Matrix rotateX(const double angle) {
     Matrix rotateXMatrix;
     double cosAngle = cos(angle);
@@ -82,7 +81,6 @@ Matrix eyeMatrix(Vector3D eye){
     return transformMatrix;
 }
 
-
 Figure3D applyTransform(const Figure3D &figure, const Matrix &transformation) {
     Figure3D transformedFigure = figure;
     for (Vector3D &point : transformedFigure.points) {
@@ -97,11 +95,7 @@ Vector3D project(Vector3D point, const Vector3D &eye){
     return projectedPoint;
 };
 
-#include <iostream>
-
 Lines2D projectFigure(const Figure3D &figure, const Vector3D &eye, double d, Color lineColor) {
-    const double epsilon = 1e-6;
-    const double maxCoord = 1e6; // Define a maximum allowed coordinate value
     Lines2D lines2D;
 
     for (const auto& edge : figure.faces) {
@@ -109,26 +103,22 @@ Lines2D projectFigure(const Figure3D &figure, const Vector3D &eye, double d, Col
         Vector3D endPoint = figure.points[edge.point_indices.back()];
 
         startPoint = project(startPoint, eye);
-        startPoint.x = -startPoint.x * d / (startPoint.z + epsilon);
-        startPoint.y = -startPoint.y * d / (startPoint.z + epsilon);
+        startPoint.x = -startPoint.x * d / (startPoint.z);
+        startPoint.y = -startPoint.y * d / (startPoint.z);
 
         endPoint = project(endPoint, eye);
-        endPoint.x = -endPoint.x * d / (endPoint.z + epsilon);
-        endPoint.y = -endPoint.y * d / (endPoint.z + epsilon);
+        endPoint.x = -endPoint.x * d / (endPoint.z);
+        endPoint.y = -endPoint.y * d / (endPoint.z);
 
         Point2D startPoint2D = {startPoint.x, startPoint.y};
         Point2D endPoint2D = {endPoint.x, endPoint.y};
 
-        if (std::abs(startPoint2D.x) < maxCoord && std::abs(startPoint2D.y) < maxCoord &&
-            std::abs(endPoint2D.x) < maxCoord && std::abs(endPoint2D.y) < maxCoord) {
-            lines2D.push_back(Line2D(startPoint2D, endPoint2D, lineColor));
-        }
+        lines2D.push_back(Line2D(startPoint2D, endPoint2D, lineColor));
+
     }
 
     return lines2D;
 }
-
-
 
 Figures3D parseiniFigures(ini::Configuration &configuration) {
     Figures3D figures;
@@ -201,8 +191,8 @@ img::EasyImage linedrawer3D(ini::Configuration &configuration) {
     img::EasyImage image;
 
     auto [eye,
-          bgColor,
-          size] = parseGeneralSettings(configuration);
+            bgColor,
+            size] = parseGeneralSettings(configuration);
 
     // Create and initialize your 3D figures
     Figures3D figures = parseiniFigures(configuration);
@@ -216,15 +206,15 @@ img::EasyImage linedrawer3D(ini::Configuration &configuration) {
         double scale = figure.scale;
         Color lineColor = figure.lineColor;
         Matrix transformation = scaleFigure(scale) *
-                rotateX((figure.angleX)) *
-                rotateY(figure.angleY) *
-                rotateZ(figure.angleZ) *
-                translate(translationVector);
+                                rotateX((figure.angleX * M_PI) / 180) *
+                                rotateY((figure.angleY * M_PI) / 180) *
+                                rotateZ((figure.angleZ * M_PI) / 180) *
+                                translate(translationVector);
         Figure3D transformedFigure = applyTransform(figure, transformation);
         lines2D = projectFigure(transformedFigure, eye, d, lineColor);
 
         for(const Line2D &line : lines2D){
-            allLines2D.push_front(line);
+            allLines2D.push_back(line);
         }
     }
 
@@ -232,4 +222,5 @@ img::EasyImage linedrawer3D(ini::Configuration &configuration) {
 
     return image;
 }
+
 
