@@ -20,8 +20,8 @@ Matrix rotateX(const double angle) {
     double cosAngle = cos(angle);
     double sinAngle = sin(angle);
     rotateXMatrix(2, 2) = cosAngle;
-    rotateXMatrix(2, 3) = -sinAngle;
-    rotateXMatrix(3, 2) = sinAngle;
+    rotateXMatrix(2, 3) = sinAngle;
+    rotateXMatrix(3, 2) = -sinAngle;
     rotateXMatrix(3, 3) = cosAngle;
     return rotateXMatrix;
 }
@@ -31,8 +31,8 @@ Matrix rotateY(const double angle) {
     double cosAngle = cos(angle);
     double sinAngle = sin(angle);
     rotateYMatrix(1, 1) = cosAngle;
-    rotateYMatrix(1, 3) = sinAngle;
-    rotateYMatrix(3, 1) = -sinAngle;
+    rotateYMatrix(1, 3) = -sinAngle;
+    rotateYMatrix(3, 1) = sinAngle;
     rotateYMatrix(3, 3) = cosAngle;
     return rotateYMatrix;
 }
@@ -42,17 +42,17 @@ Matrix rotateZ(const double angle) {
     double cosAngle = cos(angle);
     double sinAngle = sin(angle);
     rotateZMatrix(1, 1) = cosAngle;
-    rotateZMatrix(1, 2) = -sinAngle;
-    rotateZMatrix(2, 1) = sinAngle;
+    rotateZMatrix(1, 2) = sinAngle;
+    rotateZMatrix(2, 1) = -sinAngle;
     rotateZMatrix(2, 2) = cosAngle;
     return rotateZMatrix;
 }
 
 Matrix translate(const vector<double> &vector) {
     Matrix translationMatrix;
-    translationMatrix(1, 4) = vector[0];
-    translationMatrix(2, 4) = vector[1];
-    translationMatrix(3, 4) = vector[2];
+    translationMatrix(4, 1) = vector[0];
+    translationMatrix(4, 2) = vector[1];
+    translationMatrix(4, 3) = vector[2];
     return translationMatrix;
 }
 
@@ -109,12 +109,12 @@ Lines2D projectFigure(const Figure3D &figure, const Vector3D &eye, double d, Col
         Vector3D endPoint = figure.points[edge.point_indices.back()];
 
         startPoint = project(startPoint, eye);
-        startPoint.x = startPoint.x * d / (startPoint.z + epsilon);
-        startPoint.y = startPoint.y * d / (startPoint.z + epsilon);
+        startPoint.x = -startPoint.x * d / (startPoint.z + epsilon);
+        startPoint.y = -startPoint.y * d / (startPoint.z + epsilon);
 
         endPoint = project(endPoint, eye);
-        endPoint.x = endPoint.x * d / (endPoint.z + epsilon);
-        endPoint.y = endPoint.y * d / (endPoint.z + epsilon);
+        endPoint.x = -endPoint.x * d / (endPoint.z + epsilon);
+        endPoint.y = -endPoint.y * d / (endPoint.z + epsilon);
 
         Point2D startPoint2D = {startPoint.x, startPoint.y};
         Point2D endPoint2D = {endPoint.x, endPoint.y};
@@ -209,6 +209,7 @@ img::EasyImage linedrawer3D(ini::Configuration &configuration) {
     double d = 1.0; // Distance parameter for projection
 
     Lines2D lines2D;
+    Lines2D allLines2D;
 
     for (const Figure3D &figure : figures) {
         vector<double> translationVector = figure.center;
@@ -221,10 +222,13 @@ img::EasyImage linedrawer3D(ini::Configuration &configuration) {
                 translate(translationVector);
         Figure3D transformedFigure = applyTransform(figure, transformation);
         lines2D = projectFigure(transformedFigure, eye, d, lineColor);
+
+        for(const Line2D &line : lines2D){
+            allLines2D.push_front(line);
+        }
     }
 
-
-    image = draw2DLines(lines2D, size, bgColor);
+    image = draw2DLines(allLines2D, size, bgColor);
 
     return image;
 }
