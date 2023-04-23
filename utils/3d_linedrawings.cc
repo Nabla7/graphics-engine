@@ -98,32 +98,240 @@ Vector3D project(Vector3D point, const Vector3D &eye){
 Lines2D projectFigure(const Figure3D &figure, const Vector3D &eye, double d, Color lineColor) {
     Lines2D lines2D;
 
-    for (const auto& edge : figure.faces) {
-        Vector3D startPoint = figure.points[edge.point_indices.front()];
-        Vector3D endPoint = figure.points[edge.point_indices.back()];
+    for (const auto& face : figure.faces) {
+        for (size_t i = 0; i < face.point_indices.size(); ++i) {
+            Vector3D startPoint = figure.points[face.point_indices[i]];
+            Vector3D endPoint = figure.points[face.point_indices[(i + 1) % face.point_indices.size()]];
 
-        startPoint = project(startPoint, eye);
-        startPoint.x = -startPoint.x * d / (startPoint.z);
-        startPoint.y = -startPoint.y * d / (startPoint.z);
+            startPoint = project(startPoint, eye);
+            startPoint.x = -startPoint.x * d / (startPoint.z);
+            startPoint.y = -startPoint.y * d / (startPoint.z);
 
-        endPoint = project(endPoint, eye);
-        endPoint.x = -endPoint.x * d / (endPoint.z);
-        endPoint.y = -endPoint.y * d / (endPoint.z);
+            endPoint = project(endPoint, eye);
+            endPoint.x = -endPoint.x * d / (endPoint.z);
+            endPoint.y = -endPoint.y * d / (endPoint.z);
 
-        Point2D startPoint2D = {startPoint.x, startPoint.y};
-        Point2D endPoint2D = {endPoint.x, endPoint.y};
+            Point2D startPoint2D = {startPoint.x, startPoint.y};
+            Point2D endPoint2D = {endPoint.x, endPoint.y};
 
-        lines2D.push_back(Line2D(startPoint2D, endPoint2D, lineColor));
-
+            lines2D.push_back(Line2D(startPoint2D, endPoint2D, lineColor));
+        }
     }
 
     return lines2D;
 }
 
+Figure3D createCube(Figure3D cube) {
+
+    cube.points.push_back(Vector3D::point(1, -1, -1));
+    cube.points.push_back(Vector3D::point(-1, 1, -1));
+    cube.points.push_back(Vector3D::point(1, 1, 1));
+    cube.points.push_back(Vector3D::point(-1, -1, 1));
+    cube.points.push_back(Vector3D::point(1, 1, -1));
+    cube.points.push_back(Vector3D::point(-1, -1, -1));
+    cube.points.push_back(Vector3D::point(1, -1, 1));
+    cube.points.push_back(Vector3D::point(-1, 1, 1));
+
+    Face face1;
+    face1.point_indices.push_back(0);
+    face1.point_indices.push_back(4);
+    face1.point_indices.push_back(2);
+    face1.point_indices.push_back(6);
+    cube.faces.push_back(face1);
+
+    Face face2;
+    face2.point_indices.push_back(4);
+    face2.point_indices.push_back(1);
+    face2.point_indices.push_back(7);
+    face2.point_indices.push_back(2);
+    cube.faces.push_back(face2);
+
+    Face face3;
+    face3.point_indices.push_back(1);
+    face3.point_indices.push_back(5);
+    face3.point_indices.push_back(3);
+    face3.point_indices.push_back(7);
+    cube.faces.push_back(face3);
+
+    Face face4;
+    face4.point_indices.push_back(5);
+    face4.point_indices.push_back(0);
+    face4.point_indices.push_back(6);
+    face4.point_indices.push_back(3);
+    cube.faces.push_back(face4);
+
+    Face face5;
+    face5.point_indices.push_back(6);
+    face5.point_indices.push_back(2);
+    face5.point_indices.push_back(7);
+    face5.point_indices.push_back(3);
+    cube.faces.push_back(face5);
+
+    Face face6;
+    face6.point_indices.push_back(0);
+    face6.point_indices.push_back(5);
+    face6.point_indices.push_back(1);
+    face6.point_indices.push_back(4);
+    cube.faces.push_back(face6);
+
+    return cube;
+}
+Figure3D createTetrahedron(Figure3D tetrahedron) {
+
+    tetrahedron.points.push_back(Vector3D::point(1, -1, -1));
+    tetrahedron.points.push_back(Vector3D::point(-1, 1, -1));
+    tetrahedron.points.push_back(Vector3D::point(1, 1, 1));
+    tetrahedron.points.push_back(Vector3D::point(-1, -1, 1));
+
+    Face face1;
+    face1.point_indices.push_back(0);
+    face1.point_indices.push_back(1);
+    face1.point_indices.push_back(2);
+    tetrahedron.faces.push_back(face1);
+
+    Face face2;
+    face2.point_indices.push_back(1);
+    face2.point_indices.push_back(3);
+    face2.point_indices.push_back(2);
+    tetrahedron.faces.push_back(face2);
+
+    Face face3;
+    face3.point_indices.push_back(0);
+    face3.point_indices.push_back(3);
+    face3.point_indices.push_back(1);
+    tetrahedron.faces.push_back(face3);
+
+    Face face4;
+    face4.point_indices.push_back(0);
+    face4.point_indices.push_back(2);
+    face4.point_indices.push_back(3);
+    tetrahedron.faces.push_back(face4);
+
+    return tetrahedron;
+}
+Figure3D createOctahedron(Figure3D octahedron) {
+
+    octahedron.points.push_back(Vector3D::point(1, 0, 0));
+    octahedron.points.push_back(Vector3D::point(0, 1, 0));
+    octahedron.points.push_back(Vector3D::point(-1, 0, 0));
+    octahedron.points.push_back(Vector3D::point(0, -1, 0));
+    octahedron.points.push_back(Vector3D::point(0, 0, -1));
+    octahedron.points.push_back(Vector3D::point(0, 0, 1));
+
+
+    Face face1;
+    face1.point_indices.push_back(0);
+    face1.point_indices.push_back(1);
+    face1.point_indices.push_back(5);
+    octahedron.faces.push_back(face1);
+
+    Face face2;
+    face2.point_indices.push_back(1);
+    face2.point_indices.push_back(2);
+    face2.point_indices.push_back(5);
+    octahedron.faces.push_back(face2);
+
+    Face face3;
+    face3.point_indices.push_back(2);
+    face3.point_indices.push_back(3);
+    face3.point_indices.push_back(5);
+    octahedron.faces.push_back(face3);
+
+    Face face4;
+    face4.point_indices.push_back(3);
+    face4.point_indices.push_back(0);
+    face4.point_indices.push_back(5);
+    octahedron.faces.push_back(face4);
+
+    Face face5;
+    face5.point_indices.push_back(1);
+    face5.point_indices.push_back(0);
+    face5.point_indices.push_back(4);
+    octahedron.faces.push_back(face5);
+
+    Face face6;
+    face6.point_indices.push_back(2);
+    face6.point_indices.push_back(1);
+    face6.point_indices.push_back(4);
+    octahedron.faces.push_back(face6);
+
+    Face face7;
+    face7.point_indices.push_back(3);
+    face7.point_indices.push_back(2);
+    face7.point_indices.push_back(4);
+    octahedron.faces.push_back(face7);
+
+    Face face8;
+    face8.point_indices.push_back(0);
+    face8.point_indices.push_back(3);
+    face8.point_indices.push_back(4);
+    octahedron.faces.push_back(face8);
+
+    return octahedron;
+}
+Figure3D createIcosahedron(Figure3D icosahedron) {
+
+    icosahedron.points.push_back(Vector3D::point(0, 0, sqrt(5)/2));
+
+    icosahedron.points.push_back(Vector3D::point( cos((2-2)*2*M_PI/5), sin((2-2)*2*M_PI/5), 0.5));
+    icosahedron.points.push_back(Vector3D::point( cos((3-2)*2*M_PI/5), sin((3-2)*2*M_PI/5), 0.5));
+    icosahedron.points.push_back(Vector3D::point( cos((4-2)*2*M_PI/5), sin((4-2)*2*M_PI/5), 0.5));
+    icosahedron.points.push_back(Vector3D::point( cos((5-2)*2*M_PI/5), sin((5-2)*2*M_PI/5), 0.5));
+    icosahedron.points.push_back(Vector3D::point( cos((6-2)*2*M_PI/5), sin((6-2)*2*M_PI/5), 0.5));
+
+    icosahedron.points.push_back(Vector3D::point(cos((M_PI/5)+(7-7)*(2*M_PI)/5), sin((M_PI/5)+(7-7)*(2*M_PI)/5), -0.5));
+    icosahedron.points.push_back(Vector3D::point(cos((M_PI/5)+(8-7)*(2*M_PI)/5), sin((M_PI/5)+(8-7)*(2*M_PI)/5), -0.5));
+    icosahedron.points.push_back(Vector3D::point(cos((M_PI/5)+(9-7)*(2*M_PI)/5), sin((M_PI/5)+(9-7)*(2*M_PI)/5), -0.5));
+    icosahedron.points.push_back(Vector3D::point(cos((M_PI/5)+(10-7)*(2*M_PI)/5), sin((M_PI/5)+(10-7)*(2*M_PI)/5), -0.5));
+    icosahedron.points.push_back(Vector3D::point(cos((M_PI/5)+(11-7)*(2*M_PI)/5), sin((M_PI/5)+(11-7)*(2*M_PI)/5), -0.5));
+
+    icosahedron.points.push_back(Vector3D::point(0, 0, -sqrt(5)/2));
+
+
+    const int face_indices[][3] = {
+            {0, 1, 2},
+            {0, 2, 3},
+            {0, 3, 4},
+            {0, 4, 5},
+            {0, 5, 1},
+            {1, 6, 2},
+            {2, 6, 7},
+            {2, 7, 3},
+            {3, 7, 8},
+            {3, 8, 4},
+            {4, 8, 9},
+            {4, 9, 5},
+            {5, 9, 10},
+            {5, 10, 1},
+            {1, 10, 6},
+            {11, 7, 6},
+            {11, 8, 7},
+            {11, 9, 8},
+            {11, 10, 9},
+            {11, 6, 10},
+    };
+
+    for (int i = 0; i < 20; ++i) {
+        Face face;
+        face.point_indices.push_back(face_indices[i][0]);
+        face.point_indices.push_back(face_indices[i][1]);
+        face.point_indices.push_back(face_indices[i][2]);
+        icosahedron.faces.push_back(face);
+    }
+
+    return icosahedron;
+}
+
+
+
+
+
+
 Figures3D parseiniFigures(ini::Configuration &configuration) {
     Figures3D figures;
 
     int nrFigures = configuration["General"]["nrFigures"].as_int_or_die();
+
     for (int i = 0; i < nrFigures; i++) {
         std::string figureSection = "Figure" + std::to_string(i);
         Figure3D figure;
@@ -135,33 +343,67 @@ Figures3D parseiniFigures(ini::Configuration &configuration) {
         figure.center = configuration[figureSection]["center"].as_double_tuple_or_die();
         // Parse the color
         auto colorTuple = configuration[figureSection]["color"].as_double_tuple_or_die();
-        figure.lineColor.red = colorTuple[0]*255;
-        figure.lineColor.green = colorTuple[1]*255;
-        figure.lineColor.blue = colorTuple[2]*255;
+        figure.lineColor.red = colorTuple[0] * 255;
+        figure.lineColor.green = colorTuple[1] * 255;
+        figure.lineColor.blue = colorTuple[2] * 255;
 
-        // Parse the points
-        int nrPoints = configuration[figureSection]["nrPoints"].as_int_or_die();
-        for (int j = 0; j < nrPoints; j++) {
-            std::string pointKey = "point" + std::to_string(j);
-            auto pointTuple = configuration[figureSection][pointKey].as_double_tuple_or_die();
-            Vector3D point = Vector3D::point(pointTuple[0], pointTuple[1], pointTuple[2]);
-            figure.points.push_back(point);
+        std::string figure_type = configuration[figureSection]["type"].as_string_or_die();
+
+        if(figure_type == "LineDrawing"){
+            int nrPoints = configuration[figureSection]["nrPoints"].as_int_or_die();
+            int nrLines = configuration[figureSection]["nrLines"].as_int_or_die();
+
+            // Parse the points
+            for (int j = 0; j < nrPoints; j++) {
+                std::string pointKey = "point" + std::to_string(j);
+                auto pointTuple = configuration[figureSection][pointKey].as_double_tuple_or_die();
+                Vector3D point = Vector3D::point(pointTuple[0], pointTuple[1], pointTuple[2]);
+                figure.points.push_back(point);
+            }
+
+            // Parse the lines (faces)
+            for (int j = 0; j < nrLines; j++) {
+                std::string lineKey = "line" + std::to_string(j);
+                auto lineTuple = configuration[figureSection][lineKey].as_int_tuple_or_die();
+                Face face;
+                face.point_indices.push_back(lineTuple[0]);
+                face.point_indices.push_back(lineTuple[1]);
+                figure.faces.push_back(face);
+            }
         }
-
-        // Parse the lines (faces)
-        int nrLines = configuration[figureSection]["nrLines"].as_int_or_die();
-        for (int j = 0; j < nrLines; j++) {
-            std::string lineKey = "line" + std::to_string(j);
-            auto lineTuple = configuration[figureSection][lineKey].as_int_tuple_or_die();
-            Face face;
-            face.point_indices.push_back(lineTuple[0]);
-            face.point_indices.push_back(lineTuple[1]);
-            figure.faces.push_back(face);
+        else if (figure_type == "Cube"){
+            figure = createCube(figure);
+        }
+        else if (figure_type == "Tetrahedron"){
+            figure = createTetrahedron(figure);
+        }
+        else if (figure_type == "Octahedron"){
+            figure = createOctahedron(figure);
+        }
+        else if (figure_type == "Icosahedron"){
+            figure = createIcosahedron(figure);
+        }
+        else if (figure_type == "Dodecahedron"){
+            //figure = createDodecahedron();
+        }
+        else if (figure_type == "Cylinder"){
+            //figure = createCylinder();
+        }
+        else if (figure_type == "Cone"){
+            //figure = createCone();
+        }
+        else if (figure_type == "Sphere"){
+            //figure = createSphere();
+        }
+        else if (figure_type == "Torus"){
+            //figure = createTorus();
+        }
+        else if (figure_type == "3DLSystem"){
+            //figure = create3DLSystem();
         }
 
         figures.push_back(figure);
     }
-
     return figures;
 }
 
