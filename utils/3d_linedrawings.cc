@@ -377,16 +377,18 @@ Figure3D createCylinder(Figure3D cylinder) {
 
     int n = cylinder.n;
     double h = cylinder.height;
+    double radius = 1.0;
     // Create top and bottom circle points
     for (int i = 0; i < n; ++i) {
         double angle = 2 * M_PI * i / n;
-        double x = cos(angle);
-        double z = sin(angle);
+        double x = radius*cos(angle);
+        double z = radius*sin(angle);
+
 
         // Bottom circle point
-        cylinder.points.push_back(Vector3D::point(x, z, -h / 2));
+        cylinder.points.push_back(Vector3D::point(x, z, 0));
         // Top circle point
-        cylinder.points.push_back(Vector3D::point(x, z, h / 2));
+        cylinder.points.push_back(Vector3D::point(x, z, h));
     }
 
     // Create bottom and top faces
@@ -445,6 +447,75 @@ Figure3D createCone(Figure3D cone) {
 
     return cone;
 }
+Figure3D createSphere(Figure3D sphere) {
+    int n = sphere.n;
+
+    // Step 1: Generate an icosahedron
+    Figure3D icosahedron;
+    icosahedron = createIcosahedron(icosahedron);
+
+    // Step 2: Divide the triangles of the faces up into smaller triangles
+    // Step 3: Repeat step 2 n times
+    for (int i = 0; i < n; ++i) {
+        std::vector<Face> new_faces;
+
+        for (const Face &face: icosahedron.faces) {
+            // Retrieve the vertices of the current face
+            Vector3D A = icosahedron.points[face.point_indices[0]];
+            Vector3D B = icosahedron.points[face.point_indices[1]];
+            Vector3D C = icosahedron.points[face.point_indices[2]];
+
+            // Compute the midpoints of each edge
+            Vector3D AB = (A + B) * 0.5;
+            Vector3D BC = (B + C) * 0.5;
+            Vector3D CA = (C + A) * 0.5;
+
+            // Add the new points to the icosahedron points list
+            int idxAB = icosahedron.points.size();
+            icosahedron.points.push_back(AB);
+
+            int idxBC = icosahedron.points.size();
+            icosahedron.points.push_back(BC);
+
+            int idxCA = icosahedron.points.size();
+            icosahedron.points.push_back(CA);
+
+            // Create the 4 new faces
+            Face face1, face2, face3, face4;
+            face1.point_indices = {face.point_indices[0], idxAB, idxCA};
+            face2.point_indices = {face.point_indices[1], idxBC, idxAB};
+            face3.point_indices = {face.point_indices[2], idxCA, idxBC};
+            face4.point_indices = {idxAB, idxBC, idxCA};
+
+            // Add the new faces to the new_faces vector
+            new_faces.push_back(face1);
+            new_faces.push_back(face2);
+            new_faces.push_back(face3);
+            new_faces.push_back(face4);
+        }
+
+        // Replace the icosahedron faces with the new_faces
+        icosahedron.faces = new_faces;
+    }
+
+    // Step 4: Rescale all new points
+    for (Vector3D &point: icosahedron.points) {
+        double x = point.x;
+        double y = point.y;
+        double z = point.z;
+        double r = sqrt(x * x + y * y + z * z);
+        point.x = x / r;
+        point.y = y / r;
+        point.z = z / r;
+    }
+
+    // Assign the icosahedron points and faces to the sphere
+    sphere.points = icosahedron.points;
+    sphere.faces = icosahedron.faces;
+
+    return sphere;
+}
+
 
 
 
@@ -526,7 +597,7 @@ Figure3D createCone(Figure3D cone) {
             figure = createCone(figure);
         }
         else if (figure_type == "Sphere"){
-            //figure = createSphere();
+            figure = createSphere(figure);
         }
         else if (figure_type == "Torus"){
             //figure = createTorus();
