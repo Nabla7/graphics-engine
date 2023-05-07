@@ -321,6 +321,61 @@ Figure3D createIcosahedron(Figure3D icosahedron) {
 
     return icosahedron;
 }
+Figure3D createDodecahedron(Figure3D icosahedron) {
+    Figure3D dodecahedron;
+    // Step 0: Ensure that the dodecahedron inherits the properties from icosahedron.
+    dodecahedron.center = icosahedron.center;
+    dodecahedron.lineColor = icosahedron.lineColor;
+    dodecahedron.angleX = icosahedron.angleX;
+    dodecahedron.angleY = icosahedron.angleY;
+    dodecahedron.angleZ = icosahedron.angleZ;
+    dodecahedron.scale = icosahedron.scale;
+
+    // Step 1: Compute the centroid of each face of the icosahedron.
+    for (const Face& face : icosahedron.faces) {
+        Vector3D centroid = Vector3D::point(0, 0, 0);
+        for (int idx : face.point_indices) {
+            centroid += icosahedron.points[idx];
+        }
+        centroid /= face.point_indices.size();
+
+        // Step 2: Normalize the centroid points to form the vertices of the dodecahedron.
+        double radius = sqrt(3); // Assuming icosahedron edge length is 2
+        centroid = Vector3D::point(centroid.x * radius / centroid.length(),
+                                   centroid.y * radius / centroid.length(),
+                                   centroid.z * radius / centroid.length());
+        dodecahedron.points.push_back(centroid);
+    }
+
+    // Step 3: Define the faces of the dodecahedron using the new vertices.
+    const int face_indices[][5] = {
+            {0,  1,  2,  3,  4},
+            {0,  5, 6, 7,  1},
+            {1,  7, 8, 9,  2},
+            {2, 9, 10, 11,  3},
+            {3, 11, 12,  13,  4},
+            {4, 13, 14,  5,  0},
+            {19, 18, 17,  16,  15},
+            {19, 14, 13, 12, 18},
+            {18,  12,  11,  10,  17},
+            {17,  10,  9, 8, 16},
+            {16,  8, 7, 6,  15},
+            {15,  6, 5,  14,  19}
+    };
+
+    for (int i = 0; i < 12; ++i) {
+        Face face;
+        for (int j = 0; j < 5; ++j) {
+            face.point_indices.push_back(face_indices[i][j]);
+        }
+        dodecahedron.faces.push_back(face);
+    }
+
+    return dodecahedron;
+}
+
+
+
 
 
 
@@ -384,7 +439,8 @@ Figures3D parseiniFigures(ini::Configuration &configuration) {
             figure = createIcosahedron(figure);
         }
         else if (figure_type == "Dodecahedron"){
-            //figure = createDodecahedron();
+            figure = createIcosahedron(figure);
+            figure = createDodecahedron(figure);
         }
         else if (figure_type == "Cylinder"){
             //figure = createCylinder();
