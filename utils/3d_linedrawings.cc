@@ -373,6 +373,45 @@ Figure3D createDodecahedron(Figure3D icosahedron) {
 
     return dodecahedron;
 }
+Figure3D createCylinder(Figure3D cylinder) {
+
+    int n = cylinder.n;
+    double h = cylinder.height;
+    // Create top and bottom circle points
+    for (int i = 0; i < n; ++i) {
+        double angle = 2 * M_PI * i / n;
+        double x = cos(angle);
+        double z = sin(angle);
+
+        // Bottom circle point
+        cylinder.points.push_back(Vector3D::point(x, z, -h / 2));
+        // Top circle point
+        cylinder.points.push_back(Vector3D::point(x, z, h / 2));
+    }
+
+    // Create bottom and top faces
+    Face bottom_face;
+    Face top_face;
+    for (int i = 0; i < n; ++i) {
+        bottom_face.point_indices.push_back(2 * i);
+        top_face.point_indices.push_back(2 * i + 1);
+    }
+    cylinder.faces.push_back(bottom_face);
+    cylinder.faces.push_back(top_face);
+
+    // Create side faces
+    for (int i = 0; i < n; ++i) {
+        int i_next = (i + 1) % n;
+        Face side_face;
+        side_face.point_indices.push_back(2 * i);          // Bottom point
+        side_face.point_indices.push_back(2 * i_next);     // Next bottom point
+        side_face.point_indices.push_back(2 * i_next + 1); // Next top point
+        side_face.point_indices.push_back(2 * i + 1);      // Top point
+        cylinder.faces.push_back(side_face);
+    }
+
+    return cylinder;
+}
 
 
 
@@ -382,7 +421,7 @@ Figure3D createDodecahedron(Figure3D icosahedron) {
 
 
 
-Figures3D parseiniFigures(ini::Configuration &configuration) {
+    Figures3D parseiniFigures(ini::Configuration &configuration) {
     Figures3D figures;
 
     int nrFigures = configuration["General"]["nrFigures"].as_int_or_die();
@@ -396,6 +435,9 @@ Figures3D parseiniFigures(ini::Configuration &configuration) {
         figure.angleZ = configuration[figureSection]["rotateZ"].as_double_or_die();
         figure.scale = configuration[figureSection]["scale"].as_double_or_die();
         figure.center = configuration[figureSection]["center"].as_double_tuple_or_die();
+        figure.n = configuration[figureSection]["n"].as_int_or_default(0);
+        figure.height = configuration[figureSection]["height"].as_double_or_default(0.0);
+
         // Parse the color
         auto colorTuple = configuration[figureSection]["color"].as_double_tuple_or_die();
         figure.lineColor.red = colorTuple[0] * 255;
@@ -443,7 +485,7 @@ Figures3D parseiniFigures(ini::Configuration &configuration) {
             figure = createDodecahedron(figure);
         }
         else if (figure_type == "Cylinder"){
-            //figure = createCylinder();
+            figure = createCylinder(figure);
         }
         else if (figure_type == "Cone"){
             //figure = createCone();
