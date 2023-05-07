@@ -412,6 +412,41 @@ Figure3D createCylinder(Figure3D cylinder) {
 
     return cylinder;
 }
+Figure3D createCone(Figure3D cone) {
+
+    int n = cone.n;
+    double h = cone.height;
+    // Add the top point of the cone
+    cone.points.push_back(Vector3D::point(0, 0, h));
+
+    // Add the points of the base in counterclockwise order
+    for (int i = 0; i < n; ++i) {
+        double angle = 2 * M_PI * i / n;
+        double x = cos(angle);
+        double y = sin(angle);
+        cone.points.push_back(Vector3D::point(x, y, 0));
+    }
+
+    // Add the triangular faces connecting the top point to the base
+    for (int i = 1; i <= n; ++i) {
+        Face face;
+        face.point_indices.push_back(0); // The top point of the cone
+        face.point_indices.push_back(i);
+        face.point_indices.push_back(i % n + 1);
+        cone.faces.push_back(face);
+    }
+
+    // Add the base face
+    Face baseFace;
+    for (int i = 1; i <= n; ++i) {
+        baseFace.point_indices.push_back(i);
+    }
+    cone.faces.push_back(baseFace);
+
+    return cone;
+}
+
+
 
 
 
@@ -488,7 +523,7 @@ Figure3D createCylinder(Figure3D cylinder) {
             figure = createCylinder(figure);
         }
         else if (figure_type == "Cone"){
-            //figure = createCone();
+            figure = createCone(figure);
         }
         else if (figure_type == "Sphere"){
             //figure = createSphere();
