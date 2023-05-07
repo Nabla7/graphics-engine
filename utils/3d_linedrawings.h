@@ -30,6 +30,9 @@ public:
     vector<double> center;
     vector<double> bgColor;
     int n;
+    int m;
+    double r;
+    double R;
     double height;
 };
 

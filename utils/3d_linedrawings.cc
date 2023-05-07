@@ -515,19 +515,44 @@ Figure3D createSphere(Figure3D sphere) {
 
     return sphere;
 }
+Figure3D createTorus(Figure3D torus) {
+    double r = torus.r;
+    double R = torus.R;
+    int n = torus.n;
+    int m = torus.m;
+
+    // Create torus points
+    for (int i = 0; i < n; ++i) {
+        double angle_n = 2 * M_PI * i / n;
+        for (int j = 0; j < m; ++j) {
+            double angle_m = 2 * M_PI * j / m;
+            double x = (R + r * cos(angle_m)) * cos(angle_n);
+            double y = (R + r * cos(angle_m)) * sin(angle_n);
+            double z = r * sin(angle_m);
+
+            torus.points.push_back(Vector3D::point(x, y, z));
+        }
+    }
+
+    // Create torus faces
+    for (int i = 0; i < n; ++i) {
+        int i_next = (i + 1) % n;
+        for (int j = 0; j < m; ++j) {
+            int j_next = (j + 1) % m;
+            Face face;
+            face.point_indices.push_back(i * m + j);           // Current point
+            face.point_indices.push_back(i_next * m + j);      // Next circle point
+            face.point_indices.push_back(i_next * m + j_next); // Next circle and next point
+            face.point_indices.push_back(i * m + j_next);      // Next point
+            torus.faces.push_back(face);
+        }
+    }
+
+    return torus;
+}
 
 
-
-
-
-
-
-
-
-
-
-
-    Figures3D parseiniFigures(ini::Configuration &configuration) {
+Figures3D parseiniFigures(ini::Configuration &configuration) {
     Figures3D figures;
 
     int nrFigures = configuration["General"]["nrFigures"].as_int_or_die();
@@ -541,7 +566,11 @@ Figure3D createSphere(Figure3D sphere) {
         figure.angleZ = configuration[figureSection]["rotateZ"].as_double_or_die();
         figure.scale = configuration[figureSection]["scale"].as_double_or_die();
         figure.center = configuration[figureSection]["center"].as_double_tuple_or_die();
+
         figure.n = configuration[figureSection]["n"].as_int_or_default(0);
+        figure.m = configuration[figureSection]["m"].as_int_or_default(0);
+        figure.r = configuration[figureSection]["r"].as_double_or_default(0.0);
+        figure.R = configuration[figureSection]["R"].as_double_or_default(0.0);
         figure.height = configuration[figureSection]["height"].as_double_or_default(0.0);
 
         // Parse the color
@@ -600,7 +629,7 @@ Figure3D createSphere(Figure3D sphere) {
             figure = createSphere(figure);
         }
         else if (figure_type == "Torus"){
-            //figure = createTorus();
+            figure = createTorus(figure);
         }
         else if (figure_type == "3DLSystem"){
             //figure = create3DLSystem();
