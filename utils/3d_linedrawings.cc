@@ -550,6 +550,9 @@ Figure3D createTorus(Figure3D torus) {
     return torus;
 }
 
+std::vector<Face> triangulate(
+        const Face& face){
+}
 
 Figures3D parseiniFigures(ini::Configuration &configuration) {
     Figures3D figures;
@@ -756,6 +759,14 @@ img::EasyImage linedrawer3DWithZBuffer(ini::Configuration &configuration) {
     image = draw2DLinesWithZBuffer(allLines2D, size, bgColor, zBuffer);
 
     return image;
+}
+
+img::EasyImage linedrawer3DWithZBufferTriangles(ini::Configuration &configuration){
+    img::EasyImage image;
+
+    auto [eye,
+            bgColor,
+            size] = parseGeneralSettings(configuration);
 }
 
 

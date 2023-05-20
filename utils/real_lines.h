@@ -37,6 +37,10 @@ public:
 
 using Lines2D = std::list<Line2D>;
 
+double max(std::initializer_list<double> values);
+double min(std::initializer_list<double> values);
+std::pair<double, double> calculateImageDimensions(Lines2D& lines, double size);
+
 Lines2D L_System2D (const string &inputfile,
                     const Color color);
 
