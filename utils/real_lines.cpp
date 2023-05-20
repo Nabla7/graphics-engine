@@ -192,3 +192,82 @@ img::EasyImage draw2DLines(Lines2D &lines,
     // Return the image
     return image;
 }
+
+img::EasyImage draw2DLinesWithZBuffer(Lines2D &lines,
+                                      const int &size,
+                                      Color &backgroundcolor,
+                                      vector<vector<double>> &zBuffer) {
+    // Find the maximum and minimum x and y values among all the points in the lines
+    double current_x_max = lines.begin()->p1.x;
+    double current_x_min = lines.begin()->p1.x;
+    double current_y_max = lines.begin()->p1.y;
+    double current_y_min = lines.begin()->p1.y;
+
+    // Loop over all the lines to find the maximum and minimum x and y values
+    for (Line2D &line : lines) {
+        current_x_max = max({line.p1.x, line.p2.x, current_x_max});
+        current_x_min = min({line.p1.x, line.p2.x, current_x_min});
+        current_y_max = max({line.p1.y, line.p2.y, current_y_max});
+        current_y_min = min({line.p1.y, line.p2.y, current_y_min});
+    }
+
+    // Find the range of x and y values
+    double x_range = current_x_max - current_x_min;
+    double y_range = current_y_max - current_y_min;
+
+    // Calculate the dimensions of the image based on the size parameter
+    double image_x = size*(x_range)/max(x_range, y_range);
+    double image_y = size*(y_range)/max(x_range, y_range);
+
+    // Calculate the scaling factor
+    double d = 0.95 * image_x/x_range;
+
+    // Scale and shift all the points
+    for (Line2D &line : lines) {
+        line.p1.x = d * line.p1.x;
+        line.p1.y = d * line.p1.y;
+        line.p2.x = d * line.p2.x;
+        line.p2.y = d * line.p2.y;
+
+        line.p1.x = line.p1.x - (current_x_min * d) + ((image_x - x_range * d)/2);
+        line.p1.y = line.p1.y - (current_y_min * d) + ((image_y - y_range * d)/2);
+        line.p2.x = line.p2.x - (current_x_min * d) + ((image_x - x_range * d)/2);
+        line.p2.y = line.p2.y - (current_y_min * d) + ((image_y - y_range * d)/2);
+
+
+        // Round the coordinates to the nearest integer
+        line.p1.x = lround(line.p1.x);
+        line.p1.y = lround(line.p1.y);
+        line.p2.x = lround(line.p2.x);
+        line.p2.y = lround(line.p2.y);
+    }
+
+
+    // Create a new EasyImage of the appropriate size
+    img::EasyImage image(image_x, image_y, backgroundcolor);
+
+    // Draw all the lines on the image
+    for (Line2D line : lines) {
+        img::Color line_color = line.color;
+        // Custom line drawing function that updates the z-buffer and checks depth values
+        image.draw_zbuff_line(line.p1.x, line.p1.y, line.p2.x, line.p2.y, line.color,
+                              [&](int x, int y, double t) {
+                                  double z = interpolateZ(line.p1, line.p2, t);
+                                  if (z < zBuffer[x][y]) {
+                                      zBuffer[x][y] = z;
+                                      return true;
+                                  }
+                                  return false;
+                              });
+
+    }
+
+    // Return the image
+    return image;
+}
+
+double interpolateZ(const Point2D& p1, const Point2D& p2, double t) {
+    return   t/p1.z + (1 - t)/p2.z ;
+}
+
+

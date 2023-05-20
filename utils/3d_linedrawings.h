@@ -39,5 +39,6 @@ public:
 typedef vector<Figure3D> Figures3D;
 
 img::EasyImage linedrawer3D(ini::Configuration &configuration);
+img::EasyImage linedrawer3DWithZBuffer(ini::Configuration &configuration);
 
 #endif //ENGINE_3D_LINEDRAWINGS_H

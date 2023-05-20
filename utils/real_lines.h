@@ -17,6 +17,7 @@ class Point2D {
 public:
     double x;
     double y;
+    double z;
 };
 
 
@@ -42,5 +43,12 @@ Lines2D L_System2D (const string &inputfile,
 img::EasyImage draw2DLines(Lines2D &lines,
                            const int &size,
                            Color &backgroundcolor);
+
+double interpolateZ(const Point2D& p1, const Point2D& p2, double t);
+
+img::EasyImage draw2DLinesWithZBuffer(Lines2D &lines,
+                                      const int &size,
+                                      Color &backgroundcolor,
+                                      vector<vector<double>> &zBuffer);
 
 #endif //ENGINE_REAL_LINES_H

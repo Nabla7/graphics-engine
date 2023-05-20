@@ -111,13 +111,12 @@ Lines2D projectFigure(const Figure3D &figure, const Vector3D &eye, double d, Col
             endPoint.x = -endPoint.x * d / (endPoint.z);
             endPoint.y = -endPoint.y * d / (endPoint.z);
 
-            Point2D startPoint2D = {startPoint.x, startPoint.y};
-            Point2D endPoint2D = {endPoint.x, endPoint.y};
+            Point2D startPoint2D = {startPoint.x, startPoint.y, startPoint.z};
+            Point2D endPoint2D = {endPoint.x, endPoint.y, endPoint.z};
 
             lines2D.push_back(Line2D(startPoint2D, endPoint2D, lineColor));
         }
     }
-
     return lines2D;
 }
 
@@ -697,5 +696,67 @@ img::EasyImage linedrawer3D(ini::Configuration &configuration) {
 
     return image;
 }
+
+img::EasyImage linedrawer3DWithZBuffer(ini::Configuration &configuration) {
+    img::EasyImage image;
+
+    auto [eye,
+            bgColor,
+            size] = parseGeneralSettings(configuration);
+
+    // Create and initialize your 3D figures
+    Figures3D figures = parseiniFigures(configuration);
+    double d = 1.0; // Distance parameter for projection
+
+    Lines2D lines2D;
+    Lines2D allLines2D;
+
+    for (const Figure3D &figure : figures) {
+        vector<double> translationVector = figure.center;
+        double scale = figure.scale;
+        Color lineColor = figure.lineColor;
+        Matrix transformation = scaleFigure(scale) *
+                                rotateX((figure.angleX * M_PI) / 180) *
+                                rotateY((figure.angleY * M_PI) / 180) *
+                                rotateZ((figure.angleZ * M_PI) / 180) *
+                                translate(translationVector);
+        Figure3D transformedFigure = applyTransform(figure, transformation);
+        lines2D = projectFigure(transformedFigure, eye, d, lineColor);
+
+        for(const Line2D &line : lines2D){
+            allLines2D.push_back(line);
+        }
+    }
+
+    // Find the maximum and minimum x and y values among all the points in the lines
+    double current_x_max = allLines2D.begin()->p1.x;
+    double current_x_min = allLines2D.begin()->p1.x;
+    double current_y_max = allLines2D.begin()->p1.y;
+    double current_y_min = allLines2D.begin()->p1.y;
+
+    // Loop over all the lines to find the maximum and minimum x and y values
+    for (Line2D &line : allLines2D) {
+        current_x_max = max({line.p1.x, line.p2.x, current_x_max});
+        current_x_min = min({line.p1.x, line.p2.x, current_x_min});
+        current_y_max = max({line.p1.y, line.p2.y, current_y_max});
+        current_y_min = min({line.p1.y, line.p2.y, current_y_min});
+    }
+
+    // Find the range of x and y values
+    double x_range = current_x_max - current_x_min;
+    double y_range = current_y_max - current_y_min;
+
+    // Calculate the dimensions of the image based on the size parameter
+    double image_x = size*(x_range)/max(x_range, y_range);
+    double image_y = size*(y_range)/max(x_range, y_range);
+
+    // Create a z-buffer with the same dimensions as the image
+    vector<vector<double>> zBuffer(image_x, vector<double>(image_y, numeric_limits<double>::infinity()));
+
+    image = draw2DLinesWithZBuffer(allLines2D, size, bgColor, zBuffer);
+
+    return image;
+}
+
 
 

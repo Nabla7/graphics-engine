@@ -220,6 +220,9 @@ namespace img
 			 */
 			void draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, Color color);
 
+            void draw_zbuff_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1,
+                                                 Color color, std::function<bool(int, int, double)> zBufferChecker);
+
 		private:
 			friend std::istream& operator>>(std::istream& in, EasyImage & image);
 			/**

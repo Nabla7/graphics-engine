@@ -48,6 +48,11 @@ img::EasyImage generate_image(ini::Configuration &configuration)
 
     }
 
+    if (type == "ZBufferedWireframe"){
+        image = linedrawer3DWithZBuffer(configuration);
+        //image = linedrawer3D(configuration);
+    }
+
     if (type == "Wireframe"){
         image = linedrawer3D(configuration);
     }
