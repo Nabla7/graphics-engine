@@ -20,6 +20,7 @@ public:
 
 class Figure3D{
 public:
+    string type;
     vector<Vector3D> points;
     vector<Face> faces;
     img::Color lineColor;
@@ -34,6 +35,8 @@ public:
     double r;
     double R;
     double height;
+    double fractalScale;
+    int nrIterations;
 };
 
 typedef vector<Figure3D> Figures3D;

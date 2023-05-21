@@ -587,6 +587,159 @@ Figure3D createTorus(Figure3D torus) {
 
     return torus;
 }
+Figure3D createBuckyBall(Figure3D buckyBall) {
+    float golden_ratio = (1.0f + sqrt(5.0f)) / 2.0f;
+    // Step 0: Ensure that the buckyBall inherits the properties from icosahedron.
+    Figure3D icosahedron = createIcosahedron(buckyBall);
+    buckyBall.center = icosahedron.center;
+    buckyBall.lineColor = icosahedron.lineColor;
+    buckyBall.angleX = icosahedron.angleX;
+    buckyBall.angleY = icosahedron.angleY;
+    buckyBall.angleZ = icosahedron.angleZ;
+    buckyBall.scale = icosahedron.scale;
+
+    // Step 1: Add the vertices of the icosahedron to the buckyBall.
+    buckyBall.points = icosahedron.points;
+
+    // Step 2: Add vertices in the middle of each edge of the icosahedron.
+    map<pair<int, int>, int> midpoint_indices;
+    int mid_index = 12; // Start index for midpoint vertices
+    for (const Face& face : icosahedron.faces) {
+        for (int i = 0; i < 3; ++i) {
+            Vector3D A = icosahedron.points[face.point_indices[i]];
+            Vector3D B = icosahedron.points[face.point_indices[(i + 1) % 3]];
+            Vector3D midpoint = (A + B) * 0.5;
+
+            // Use a pair of vertex indices (smaller one first) to uniquely identify an edge
+            pair<int, int> edge = minmax(face.point_indices[i], face.point_indices[(i + 1) % 3]);
+
+            if (midpoint_indices.find(edge) == midpoint_indices.end()) {
+                midpoint_indices[edge] = mid_index++;
+                buckyBall.points.push_back(midpoint);
+            }
+        }
+    }
+
+    // Step 2.1: Move each midpoint towards the center of the icosahedron
+    float scale_factor = 1.0f / (1.0f + golden_ratio);
+    for (int i = 12; i < 12 + 30; ++i) {
+        Vector3D& vertex = buckyBall.points[i];
+        vertex = vertex * scale_factor;
+    }
+
+    // Step 3: Define the faces of the buckyBall using the new vertices.
+    // Create pentagonal faces
+    for (int i = 0; i < 12; ++i) {
+        Face face;
+        for (int j = 0; j < 5; ++j) {
+            int index = 12 + (5 * i + j) % 30;
+            face.point_indices.push_back(index);
+        }
+        buckyBall.faces.push_back(face);
+    }
+
+    // Create hexagonal faces
+    for (const Face& face : icosahedron.faces) {
+        for (int i = 0; i < 3; ++i) {
+            Face hexFace;
+
+            int A = face.point_indices[i];
+            int B = face.point_indices[(i + 1) % 3];
+            int C = face.point_indices[(i + 2) % 3];
+            pair<int, int> edge1 = minmax(A, B);
+            pair<int, int> edge2 = minmax(B, C);
+            int midpoint1_index = midpoint_indices[edge1];
+            int midpoint2_index = midpoint_indices[edge2];
+
+            hexFace.point_indices.push_back(A);
+            hexFace.point_indices.push_back(midpoint1_index);
+            hexFace.point_indices.push_back(midpoint2_index);
+            hexFace.point_indices.push_back(B);
+
+            buckyBall.faces.push_back(hexFace);
+        }
+    }
+
+    return buckyBall;
+}
+
+
+
+void fractalHelper(Figure3D &finalFigure, Figure3D figure, int iteration, double fractalScale) {
+    if (iteration == 0) {
+        size_t initialSize = finalFigure.points.size();
+        for (auto &face : figure.faces) {
+            for (auto &index : face.point_indices) {
+                index += initialSize;
+            }
+            finalFigure.faces.push_back(face);
+        }
+        finalFigure.points.insert(finalFigure.points.end(), figure.points.begin(), figure.points.end());
+        return;
+    }
+
+    for (size_t i = 0; i < figure.points.size(); ++i) {
+        Figure3D newFigure = figure;
+
+        // Scale the figure
+        Matrix scalingMatrix = scaleFigure(1.0 / fractalScale);
+        newFigure = applyTransform(newFigure, scalingMatrix);
+
+        // Translate the figure
+        vector<double> translateVector = {
+                figure.points[i].x - newFigure.points[i].x,
+                figure.points[i].y - newFigure.points[i].y,
+                figure.points[i].z - newFigure.points[i].z
+        };
+        Matrix translationMatrix = translate(translateVector);
+        newFigure = applyTransform(newFigure, translationMatrix);
+
+        // Recursive call
+        fractalHelper(finalFigure, newFigure, iteration - 1, fractalScale);
+    }
+}
+
+Figure3D create3DFractal(Figure3D figure) {
+    // Create the initial figure based on the provided figure_type
+    Figure3D baseFigure;
+
+    if (figure.type == "FractalCube") {
+        baseFigure = createCube(figure);
+    }
+    if (figure.type == "FractalTetrahedron") {
+        baseFigure = createTetrahedron(figure);
+    }
+    if (figure.type == "FractalOctahedron"){
+        baseFigure = createOctahedron(figure);
+    }
+    if (figure.type == "FractalIcosahedron"){
+        baseFigure = createIcosahedron(figure);
+    }
+    if (figure.type == "FractalDodecahedron"){
+        baseFigure = createIcosahedron(figure);
+        baseFigure = createDodecahedron(baseFigure);
+    }
+    if (figure.type == "FractalBuckyBall"){
+        baseFigure = createBuckyBall(figure);
+    }
+    if (figure.type == "MengerSponge"){
+        baseFigure = createCube(figure);
+        return baseFigure;
+    }
+
+    // Scale down the figure for fractal generation
+    Matrix scalingMatrix = scaleFigure(1.0 / figure.fractalScale);
+    baseFigure = applyTransform(baseFigure, scalingMatrix);
+
+    // Final figure to return
+    Figure3D finalFigure = figure;
+
+    // Start the recursive process
+    fractalHelper(finalFigure, baseFigure, figure.nrIterations, figure.fractalScale);
+
+    return finalFigure;
+}
+
 
 Figures3D parseiniFigures(ini::Configuration &configuration) {
     Figures3D figures;
@@ -615,7 +768,10 @@ Figures3D parseiniFigures(ini::Configuration &configuration) {
         figure.lineColor.green = colorTuple[1] * 255;
         figure.lineColor.blue = colorTuple[2] * 255;
 
-        std::string figure_type = configuration[figureSection]["type"].as_string_or_die();
+        figure.type = configuration[figureSection]["type"].as_string_or_die();
+        figure.fractalScale = configuration[figureSection]["fractalScale"].as_double_or_default(0.0);
+        figure.nrIterations = configuration[figureSection]["nrIterations"].as_int_or_default(0);
+        std::string figure_type = figure.type;
 
         if(figure_type == "LineDrawing"){
             int nrPoints = configuration[figureSection]["nrPoints"].as_int_or_die();
@@ -669,6 +825,12 @@ Figures3D parseiniFigures(ini::Configuration &configuration) {
         }
         else if (figure_type == "3DLSystem"){
             //figure = create3DLSystem();
+        }
+        else if (figure_type == "BuckyBall"){
+            figure = createBuckyBall(figure);
+        }
+        else{
+            figure = create3DFractal(figure);
         }
 
         figures.push_back(figure);
@@ -770,32 +932,6 @@ img::EasyImage linedrawer3DWithZBuffer(ini::Configuration &configuration) {
     return image;
 }
 
-Figure3D triangulateFigure(Figure3D& figure) {
-    vector<Face> triangulatedFaces;
-
-    for(const Face& face : figure.faces){
-        // Pick the first point as the root
-        int rootIndex = face.point_indices[0];
-
-        // Loop over the other points in the face
-        for(int i = 1; i < face.point_indices.size() - 1; ++i){
-            Face triangle;
-            triangle.point_indices.push_back(rootIndex);
-            triangle.point_indices.push_back(face.point_indices[i]);
-            triangle.point_indices.push_back(face.point_indices[i + 1]);
-
-            // Add the new triangle to the list of triangulated faces
-            triangulatedFaces.push_back(triangle);
-        }
-    }
-
-    // Replace the figure's faces with the triangulated faces
-    figure.faces = triangulatedFaces;
-
-    return figure;
-}
-
-
 img::EasyImage linedrawer3DWithZBufferTriangles(ini::Configuration &configuration) {
     img::EasyImage image;
 
@@ -837,7 +973,30 @@ img::EasyImage linedrawer3DWithZBufferTriangles(ini::Configuration &configuratio
     return image;
 }
 
+Figure3D triangulateFigure(Figure3D& figure) {
+    vector<Face> triangulatedFaces;
 
+    for(const Face& face : figure.faces){
+        // Pick the first point as the root
+        int rootIndex = face.point_indices[0];
+
+        // Loop over the other points in the face
+        for(int i = 1; i < face.point_indices.size() - 1; ++i){
+            Face triangle;
+            triangle.point_indices.push_back(rootIndex);
+            triangle.point_indices.push_back(face.point_indices[i]);
+            triangle.point_indices.push_back(face.point_indices[i + 1]);
+
+            // Add the new triangle to the list of triangulated faces
+            triangulatedFaces.push_back(triangle);
+        }
+    }
+
+    // Replace the figure's faces with the triangulated faces
+    figure.faces = triangulatedFaces;
+
+    return figure;
+}
 
 
 
