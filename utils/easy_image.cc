@@ -323,6 +323,48 @@ void img::EasyImage::draw_zbuff_line(unsigned int x0, unsigned int y0, unsigned 
     }
 }
 
+void img::EasyImage::draw_zbuff_triangle(double x1, double y1, double z1,
+                                         double x2, double y2, double z2,
+                                         double x3, double y3, double z3,
+                                         Color color, std::function<bool(int, int, double)> zBufferChecker)
+{
+    // Create bounding box for the triangle
+    unsigned int minX = std::min({x1, x2, x3});
+    unsigned int maxX = std::max({x1, x2, x3});
+    unsigned int minY = std::min({y1, y2, y3});
+    unsigned int maxY = std::max({y1, y2, y3});
+
+    // Clamp to image dimensions
+    minX = std::max(minX, 0u);
+    minY = std::max(minY, 0u);
+    maxX = std::min(maxX, this->width - 1);
+    maxY = std::min(maxY, this->height - 1);
+
+    // Loop over the bounding box
+    for (unsigned int y = minY; y <= maxY; ++y)
+    {
+        for (unsigned int x = minX; x <= maxX; ++x)
+        {
+            // Calculate barycentric coordinates
+            double denominator = ((y2 - y3)*(x1 - x3) + (x3 - x2)*(y1 - y3));
+            double t1 = ((y2 - y3)*(x - x3) + (x3 - x2)*(y - y3)) / denominator;
+            double t2 = ((y3 - y1)*(x - x3) + (x1 - x3)*(y - y3)) / denominator;
+            double t3 = 1.0f - t1 - t2;
+
+            // Interpolate z value in 3D space
+            double z = t1 * z1 + t2 * z2 + t3 * z3;
+
+            // Check if point is inside the triangle and passes the z-buffer test
+            if (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1 && t3 >= 0 && t3 <= 1 && zBufferChecker(x, y, z))
+            {
+                // Set pixel color
+                (*this)(x, y) = color;
+            }
+        }
+    }
+}
+
+
 std::ostream& img::operator<<(std::ostream& out, EasyImage const& image)
 {
 

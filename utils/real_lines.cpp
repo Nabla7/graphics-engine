@@ -8,6 +8,7 @@
 #include "cmath"
 #include "l_parser.h"
 #include <fstream>
+#include <limits>
 
 using namespace std;
 using namespace LParser;
@@ -44,6 +45,23 @@ std::tuple<double, double, double, double> calculateMinMax(Lines2D& lines) {
     return std::make_tuple(current_x_max, current_x_min, current_y_max, current_y_min);
 }
 
+std::tuple<double, double, double, double> calculateMinMaxTriangle(Triangles2D& triangles) {
+    double current_x_max = triangles.begin()->p1.x;
+    double current_x_min = triangles.begin()->p1.x;
+    double current_y_max = triangles.begin()->p1.y;
+    double current_y_min = triangles.begin()->p1.y;
+
+    for (Triangle2D &triangle : triangles) {
+        current_x_max = max({triangle.p1.x, triangle.p2.x, triangle.p3.x, current_x_max});
+        current_x_min = min({triangle.p1.x, triangle.p2.x, triangle.p3.x, current_x_min});
+        current_y_max = max({triangle.p1.y, triangle.p2.y, triangle.p3.y, current_y_max});
+        current_y_min = min({triangle.p1.y, triangle.p2.y, triangle.p3.y, current_y_min});
+    }
+
+    return std::make_tuple(current_x_max, current_x_min, current_y_max, current_y_min);
+}
+
+
 std::pair<double, double> calculateImageDimensions(double current_x_max, double current_x_min, double current_y_max, double current_y_min, double size) {
     double x_range = current_x_max - current_x_min;
     double y_range = current_y_max - current_y_min;
@@ -72,6 +90,23 @@ void scaleAndShiftPoints(Lines2D& lines, double current_x_min, double current_y_
         line.p1.y = lround(line.p1.y);
         line.p2.x = lround(line.p2.x);
         line.p2.y = lround(line.p2.y);
+    }
+}
+
+void scaleAndShiftPointsTriangles(Triangles2D& triangles, double current_x_min, double current_y_min, double x_range, double y_range, double image_x, double image_y) {
+    double d = 0.95 * image_x/x_range;
+
+    for (Triangle2D &triangle : triangles) {
+        for(Point2D* p : {&triangle.p1, &triangle.p2, &triangle.p3}){
+            p->x = d * p->x;
+            p->y = d * p->y;
+
+            p->x = p->x - (current_x_min * d) + ((image_x - x_range * d)/2);
+            p->y = p->y - (current_y_min * d) + ((image_y - y_range * d)/2);
+
+            //p->x = lround(p->x);
+            //p->y = lround(p->y);
+        }
     }
 }
 
@@ -228,8 +263,7 @@ img::EasyImage draw2DLines(Lines2D &lines,
 
 img::EasyImage draw2DLinesWithZBuffer(Lines2D &lines,
                                       const int &size,
-                                      Color &backgroundcolor,
-                                      vector<vector<double>> &zBuffer) {
+                                      Color &backgroundcolor) {
     // Calculate the maximum and minimum x and y values among all the points in the lines
     auto [current_x_max, current_x_min, current_y_max, current_y_min] = calculateMinMax(lines);
 
@@ -239,6 +273,9 @@ img::EasyImage draw2DLinesWithZBuffer(Lines2D &lines,
 
     // Calculate the dimensions of the image based on the size parameter
     auto [image_x, image_y] = calculateImageDimensions(current_x_max, current_x_min, current_y_max, current_y_min, size);
+
+    // Create a z-buffer with the same dimensions as the image
+    vector<vector<double>> zBuffer(image_x, vector<double>(image_y, numeric_limits<double>::infinity()));
 
     // Scale and shift all the points
     scaleAndShiftPoints(lines, current_x_min, current_y_min, x_range, y_range, image_x, image_y);
@@ -269,6 +306,83 @@ img::EasyImage draw2DLinesWithZBuffer(Lines2D &lines,
 double interpolateZ(const Point2D& p1, const Point2D& p2, double t) {
     return   t/p1.z + (1 - t)/p2.z ;
 }
+
+img::EasyImage draw2DTrianglesWithZBuffer(Triangles2D &triangles,
+                                          Figures3D triangulatedFigures3D,
+                                          const int &size,
+                                          Color &backgroundcolor) {
+    // Calculate the maximum and minimum x and y values among all the points in the triangles
+    auto [current_x_max, current_x_min, current_y_max, current_y_min] = calculateMinMaxTriangle(triangles);
+
+    // Calculate the range of x and y values
+    double x_range = current_x_max - current_x_min;
+    double y_range = current_y_max - current_y_min;
+
+    // Calculate the dimensions of the image based on the size parameter
+    auto [image_x, image_y] = calculateImageDimensions(current_x_max, current_x_min, current_y_max, current_y_min, size);
+
+    // Create a z-buffer with the same dimensions as the image
+    vector<vector<double>> zBuffer(image_x, vector<double>(image_y, -numeric_limits<double>::infinity()));
+
+    // Scale and shift all the points
+    scaleAndShiftPointsTriangles(triangles, current_x_min, current_y_min, x_range, y_range, image_x, image_y);
+
+    // Create a new EasyImage of the appropriate size
+    img::EasyImage image(image_x, image_y, backgroundcolor);
+
+    // Sort all the triangles based on average z value (depth)
+    std::sort(triangles.begin(), triangles.end(), [&](const Triangle2D& a, const Triangle2D& b) {
+        // Get corresponding Figure3D objects
+        Figure3D& figA = triangulatedFigures3D[a.figureIndex];
+        Figure3D& figB = triangulatedFigures3D[b.figureIndex];
+
+        // Compute average depth for each triangle
+        double zA = (figA.points[figA.faces[a.faceIndex].point_indices[0]].z +
+                     figA.points[figA.faces[a.faceIndex].point_indices[1]].z +
+                     figA.points[figA.faces[a.faceIndex].point_indices[2]].z) / 3.0;
+
+        double zB = (figB.points[figB.faces[b.faceIndex].point_indices[0]].z +
+                     figB.points[figB.faces[b.faceIndex].point_indices[1]].z +
+                     figB.points[figB.faces[b.faceIndex].point_indices[2]].z) / 3.0;
+
+        // Compare
+        return zA > zB;  // Change to < for different coordinate system
+    });
+
+    // Draw all the triangles on the image
+    for (Triangle2D &triangle : triangles) {
+        // use the indices stored in the triangle to look up the corresponding Figure3D and face
+        Figure3D &figure = triangulatedFigures3D[triangle.figureIndex];
+        Face &face = figure.faces[triangle.faceIndex];
+
+        // The unprojected z-values for the vertices of the triangle
+        double z1 = figure.points[face.point_indices[0]].z;
+        double z2 = figure.points[face.point_indices[1]].z;
+        double z3 = figure.points[face.point_indices[2]].z;
+
+        // Custom triangle drawing function that updates the z-buffer and checks depth values
+        image.draw_zbuff_triangle(triangle.p1.x, triangle.p1.y, z1,
+                                  triangle.p2.x, triangle.p2.y, z2,
+                                  triangle.p3.x, triangle.p3.y, z3,
+                                  triangle.color,
+                                  [&](int x, int y, double z) {
+                                      if (z > zBuffer[x][y]) {
+                                          zBuffer[x][y] = z;
+                                          return true;
+                                      }
+                                      return false;
+                                  });
+    }
+
+
+
+    // Return the image
+    return image;
+}
+
+
+
+
 
 
 

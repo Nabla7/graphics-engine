@@ -49,7 +49,7 @@ img::EasyImage generate_image(ini::Configuration &configuration)
     }
 
     if (type == "ZBuffering"){
-        //image == linedrawer3DWithZBufferTriangles(&configuration);
+        image = linedrawer3DWithZBufferTriangles(configuration);
     }
 
     if (type == "ZBufferedWireframe"){

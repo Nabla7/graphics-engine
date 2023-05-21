@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <vector>
 #include <iostream>
+
 /**
  * \brief The namespace of the EasyImage class
  */
@@ -220,8 +221,14 @@ namespace img
 			 */
 			void draw_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, Color color);
 
-            void draw_zbuff_line(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1,
-                                                 Color color, std::function<bool(int, int, double)> zBufferChecker);
+            void draw_zbuff_line(unsigned int x0, unsigned int y0,
+                                 unsigned int x1, unsigned int y1,
+                                 Color color, std::function<bool(int, int, double)> zBufferChecker);
+
+            void draw_zbuff_triangle(double x1, double y1, double z1,
+                                    double x2, double y2, double z2,
+                                    double x3, double y3, double z3,
+                                    Color color, std::function<bool(int, int, double)> zBufferChecker);
 
 		private:
 			friend std::istream& operator>>(std::istream& in, EasyImage & image);

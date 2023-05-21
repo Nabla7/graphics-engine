@@ -22,7 +22,7 @@ class Figure3D{
 public:
     vector<Vector3D> points;
     vector<Face> faces;
-    Color lineColor;
+    img::Color lineColor;
     double angleX;
     double angleY;
     double angleZ;
@@ -41,5 +41,7 @@ typedef vector<Figure3D> Figures3D;
 img::EasyImage linedrawer3D(ini::Configuration &configuration);
 img::EasyImage linedrawer3DWithZBuffer(ini::Configuration &configuration);
 img::EasyImage linedrawer3DWithZBufferTriangles(ini::Configuration &configuration);
+
+Figure3D triangulateFigure(Figure3D& figure);
 
 #endif //ENGINE_3D_LINEDRAWINGS_H

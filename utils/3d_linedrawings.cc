@@ -119,6 +119,44 @@ Lines2D projectFigure(const Figure3D &figure, const Vector3D &eye, double d, Col
     }
     return lines2D;
 }
+Triangles2D projectTriangles(const Figure3D &figure, const Vector3D &eye, double d, Color triangleColor, size_t figureIndex) {
+    Triangles2D triangles2D;
+
+    for (size_t faceIndex = 0; faceIndex < figure.faces.size(); ++faceIndex) {
+        const auto& face = figure.faces[faceIndex];
+
+        if (face.point_indices.size() != 3) {
+            throw std::invalid_argument("Face is not a triangle");
+        }
+
+        Vector3D pointA = figure.points[face.point_indices[0]];
+        Vector3D pointB = figure.points[face.point_indices[1]];
+        Vector3D pointC = figure.points[face.point_indices[2]];
+
+        pointA = project(pointA, eye);
+        pointA.x = -pointA.x * d / (pointA.z);
+        pointA.y = -pointA.y * d / (pointA.z);
+
+        pointB = project(pointB, eye);
+        pointB.x = -pointB.x * d / (pointB.z);
+        pointB.y = -pointB.y * d / (pointB.z);
+
+        pointC = project(pointC, eye);
+        pointC.x = -pointC.x * d / (pointC.z);
+        pointC.y = -pointC.y * d / (pointC.z);
+
+        Point2D pointA2D = {pointA.x, pointA.y, pointA.z};
+        Point2D pointB2D = {pointB.x, pointB.y, pointB.z};
+        Point2D pointC2D = {pointC.x, pointC.y, pointC.z};
+
+        Triangle2D triangle(pointA2D, pointB2D, pointC2D, triangleColor);
+        triangle.figureIndex = figureIndex;
+        triangle.faceIndex = faceIndex;
+        triangles2D.push_back(triangle);
+    }
+    return triangles2D;
+}
+
 
 Figure3D createCube(Figure3D cube) {
 
@@ -550,10 +588,6 @@ Figure3D createTorus(Figure3D torus) {
     return torus;
 }
 
-std::vector<Face> triangulate(
-        const Face& face){
-}
-
 Figures3D parseiniFigures(ini::Configuration &configuration) {
     Figures3D figures;
 
@@ -731,43 +765,79 @@ img::EasyImage linedrawer3DWithZBuffer(ini::Configuration &configuration) {
         }
     }
 
-    // Find the maximum and minimum x and y values among all the points in the lines
-    double current_x_max = allLines2D.begin()->p1.x;
-    double current_x_min = allLines2D.begin()->p1.x;
-    double current_y_max = allLines2D.begin()->p1.y;
-    double current_y_min = allLines2D.begin()->p1.y;
-
-    // Loop over all the lines to find the maximum and minimum x and y values
-    for (Line2D &line : allLines2D) {
-        current_x_max = max({line.p1.x, line.p2.x, current_x_max});
-        current_x_min = min({line.p1.x, line.p2.x, current_x_min});
-        current_y_max = max({line.p1.y, line.p2.y, current_y_max});
-        current_y_min = min({line.p1.y, line.p2.y, current_y_min});
-    }
-
-    // Find the range of x and y values
-    double x_range = current_x_max - current_x_min;
-    double y_range = current_y_max - current_y_min;
-
-    // Calculate the dimensions of the image based on the size parameter
-    double image_x = size*(x_range)/max(x_range, y_range);
-    double image_y = size*(y_range)/max(x_range, y_range);
-
-    // Create a z-buffer with the same dimensions as the image
-    vector<vector<double>> zBuffer(image_x, vector<double>(image_y, numeric_limits<double>::infinity()));
-
-    image = draw2DLinesWithZBuffer(allLines2D, size, bgColor, zBuffer);
+    image = draw2DLinesWithZBuffer(allLines2D, size, bgColor);
 
     return image;
 }
 
-img::EasyImage linedrawer3DWithZBufferTriangles(ini::Configuration &configuration){
+Figure3D triangulateFigure(Figure3D& figure) {
+    vector<Face> triangulatedFaces;
+
+    for(const Face& face : figure.faces){
+        // Pick the first point as the root
+        int rootIndex = face.point_indices[0];
+
+        // Loop over the other points in the face
+        for(int i = 1; i < face.point_indices.size() - 1; ++i){
+            Face triangle;
+            triangle.point_indices.push_back(rootIndex);
+            triangle.point_indices.push_back(face.point_indices[i]);
+            triangle.point_indices.push_back(face.point_indices[i + 1]);
+
+            // Add the new triangle to the list of triangulated faces
+            triangulatedFaces.push_back(triangle);
+        }
+    }
+
+    // Replace the figure's faces with the triangulated faces
+    figure.faces = triangulatedFaces;
+
+    return figure;
+}
+
+
+img::EasyImage linedrawer3DWithZBufferTriangles(ini::Configuration &configuration) {
     img::EasyImage image;
 
-    auto [eye,
-            bgColor,
-            size] = parseGeneralSettings(configuration);
+    auto [eye, bgColor, size] = parseGeneralSettings(configuration);
+
+    // Create and initialize your 3D figures
+    Figures3D figures = parseiniFigures(configuration);
+    double d = 1.0; // Distance parameter for projection
+
+    Triangles2D triangles2D;
+    Triangles2D allTriangles2D;
+    Figures3D triangulatedFigures;
+
+    size_t figureIndex = 0;
+    for (const Figure3D &figure : figures) {
+        vector<double> translationVector = figure.center;
+        double scale = figure.scale;
+        Color lineColor = figure.lineColor;
+        Matrix transformation = scaleFigure(scale) *
+                                rotateX((figure.angleX * M_PI) / 180) *
+                                rotateY((figure.angleY * M_PI) / 180) *
+                                rotateZ((figure.angleZ * M_PI) / 180) *
+                                translate(translationVector);
+        Figure3D transformedFigure = applyTransform(figure, transformation);
+
+        // Triangulate the figure
+        Figure3D triangulatedFigure = triangulateFigure(transformedFigure);
+        triangulatedFigures.push_back(triangulatedFigure);
+        triangles2D = projectTriangles(triangulatedFigure, eye, d, lineColor, figureIndex);
+        ++figureIndex;
+
+        for(const Triangle2D &triangle : triangles2D){
+            allTriangles2D.push_back(triangle);
+        }
+    }
+
+    image = draw2DTrianglesWithZBuffer(allTriangles2D, triangulatedFigures, size, bgColor);
+
+    return image;
 }
+
+
 
 
 
