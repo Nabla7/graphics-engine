@@ -8,38 +8,43 @@ X: Niet werkend of niet geïmplementeerd
 
 |   | Functionaliteit      | Status |
 |---|---------------------------|---|
-| 1 | 2D L-systemen             | X |
-|   | Met haakjes               | X |
-|   | Stochastisch              |   |
-| 2 | Transformaties            | X |
-|   | Eye-point                 | X |
-|   | Projectie                 | X |
-| 3 | Platonische Lichamen      | X |
-|   | Kegel en cylinder         | X |
-|   | Bol                       | X |
-|   | Torus                     | X |
-|   | 3D L-systemen             |   |
-| 4 | Z-buffering (lijnen)      | X |
-| 5 | Triangulatie              | X |
-|   | Z-buffering (driehoeken)  | X |
-| 6 | 3D fractalen              | X |
-|   | BuckyBall                 |   |
-|   | Mengerspons               |   |
-|   | View Frustum              |   |
-| 7 | Ambient licht             |   |
-|   | Diffuus licht (oneindig)  |   |
-|   | Diffuus licht (puntbron)  |   |
-|   | Speculair licht           |   |
-| 8 | Schaduw                   |   |
-|   | Texture mapping           |   |
-| 9 | Bollen en cylinders       |   |
-|   | UV-coordinaten            |   |
-|   | Cube mapping              |   |
+| 1 | 2D L-systemen             | V |
+|   | Met haakjes               | V |
+|   | Stochastisch              | X |
+| 2 | Transformaties            | V |
+|   | Eye-point                 | V |
+|   | Projectie                 | V |
+| 3 | Platonische Lichamen      | V |
+|   | Kegel en cylinder         | V |
+|   | Bol                       | V |
+|   | Torus                     | V |
+|   | 3D L-systemen             | X |
+| 4 | Z-buffering (lijnen)      | - |
+| 5 | Triangulatie              | V |
+|   | Z-buffering (driehoeken)  | - |
+| 6 | 3D fractalen              | V |
+|   | BuckyBall                 | X |
+|   | Mengerspons               | X |
+|   | View Frustum              | X |
+| 7 | Ambient licht             | X |
+|   | Diffuus licht (oneindig)  | X |
+|   | Diffuus licht (puntbron)  | X |
+|   | Speculair licht           | X |
+| 8 | Schaduw                   | X |
+|   | Texture mapping           | X |
+| 9 | Bollen en cylinders       | X |
+|   | UV-coordinaten            | X |
+|   | Cube mapping              | X |
 
 Geïmplementeerde vorm van texture mapping: ...
 
 ## Gekende problemen 
-...
+
+Voor z-buffering (lijnen) is de output duidelijk beter dan de output zonder z-buffering maar voor objecten met veel lijnen is de performance niet even goed als de output van de reference implementatie.
+
+Voor Z-buffering (driehoeken) werkt alles even goed als de reference implementatie behalve voor de z_buffering079.ini test case
+
+
 ## Niet-gequoteerde functionaliteit
 ...
 
