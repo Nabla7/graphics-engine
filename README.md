@@ -42,7 +42,7 @@ Geïmplementeerde vorm van texture mapping: ...
 
 Voor z-buffering (lijnen) is de output duidelijk beter dan de output zonder z-buffering maar voor objecten met veel lijnen is de performance niet even goed als de output van de reference implementatie.
 
-Voor Z-buffering (driehoeken) werkt alles even goed als de reference implementatie behalve voor de z_buffering079.ini test case
+Voor Z-buffering (driehoeken) werkt alles even goed als de reference implementatie behalve voor de z_buffering079.ini test case, er lijkt wat z-fighting te zijn.
 
 
 ## Niet-gequoteerde functionaliteit
